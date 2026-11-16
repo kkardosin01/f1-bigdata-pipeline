@@ -1,0 +1,148 @@
+# Saída real de ./executar_demo.sh em 16/11/2026 (macOS, Python 3.9, Java 17, MongoDB local),
+# com o dataset baixado do Kaggle (versão 24, temporadas 1950-2024).
+
+########## 1. Ambiente ##########
+seg 16 nov 2026 20:26:10 -03
+Darwin arm64
+Python 3.9.6
+openjdk version "17.0.21.0.3" 2026-10-24
+
+########## 2. Dependências Python (.venv) ##########
+pyspark 4.0.5 | pymongo 4.18.3
+
+########## 3. MongoDB ##########
+MongoDB já está respondendo em localhost:27017.
+
+########## 4. Pipeline completo ##########
+
+>>> Etapas 1-2: captura e zona bruta
+[captura] baixando rohanrao/formula-1-world-championship-1950-2020 do Kaggle...
+[captura] circuits.csv              77 linhas
+[captura] status.csv               139 linhas
+[captura] drivers.csv              861 linhas
+[captura] constructors.csv         212 linhas
+[captura] races.csv              1.125 linhas
+[captura] results.csv           26.759 linhas
+[captura] qualifying.csv        10.494 linhas
+[captura] pit_stops.csv         11.371 linhas
+[captura] lap_times.csv        589.081 linhas
+[captura] zona bruta: /Users/pedrocardoso/Developer/f1-bigdata-pipeline/data/raw/f1/2026-11-16
+
+>>> Etapas 3-4: limpeza com Spark e zona confiável (Parquet)
+[limpeza] circuits      lidos=     77  válidos=     77  rejeitados=    0  
+[limpeza] status        lidos=    139  válidos=    139  rejeitados=    0  
+[limpeza] drivers       lidos=    861  válidos=    861  rejeitados=    0  
+[limpeza] constructors  lidos=    212  válidos=    212  rejeitados=    0  
+[limpeza] races         lidos=   1125  válidos=   1125  rejeitados=    0  
+[limpeza] results       lidos=  26759  válidos=  26759  rejeitados=    0  
+[limpeza] qualifying    lidos=  10494  válidos=  10494  rejeitados=    0  
+[limpeza] pit_stops     lidos=  11371  válidos=  11371  rejeitados=    0  
+[limpeza] lap_times     lidos= 589081  válidos= 589081  rejeitados=    0  
+[limpeza] zona confiável: /Users/pedrocardoso/Developer/f1-bigdata-pipeline/data/trusted/f1
+
+>>> Etapa 5: montagem dos agregados
+[agregados] corridas    1125 documentos
+[agregados] pilotos      861 documentos
+[agregados] equipes      212 documentos
+[agregados] voltas     11041 documentos
+[agregados] gravados em: /Users/pedrocardoso/Developer/f1-bigdata-pipeline/data/aggregates/f1
+
+>>> Etapa 6: ingestão no MongoDB (banco 'f1')
+[carga] corridas  gravados=  1125  total na coleção=  1125
+[carga] pilotos   gravados=   861  total na coleção=   861
+[carga] equipes   gravados=   212  total na coleção=   212
+[carga] voltas    gravados= 11041  total na coleção= 11041
+
+>>> Etapa 7: consultas de demonstração
+
+=== 1. Documentos por coleção ===
+coleção   documentos
+--------  ----------
+corridas  1125      
+pilotos   861       
+equipes   212       
+voltas    11041     
+
+=== 2. Brazilian Grand Prix 2008 — Autódromo José Carlos Pace, São Paulo (1 documento, 5 primeiros) ===
+pos  piloto            equipe      grid  pontos  pit stops  Q3      
+---  ----------------  ----------  ----  ------  ---------  --------
+1    Felipe Massa      Ferrari     1     10.0    0          1:12.368
+2    Fernando Alonso   Renault     6     8.0     0          1:12.967
+3    Kimi Räikkönen    Ferrari     3     6.0     0          1:12.825
+4    Sebastian Vettel  Toro Rosso  7     5.0     0          1:13.082
+5    Lewis Hamilton    McLaren     4     4.0     0          1:12.830
+
+=== 3. Pilotos com mais vitórias (top 10) ===
+piloto              nacionalidade  corridas  vitórias  pódios  pontos  temporadas
+------------------  -------------  --------  --------  ------  ------  ----------
+Lewis Hamilton      British        356       105       202     4820.5  2007-2024 
+Michael Schumacher  German         308       91        155     1566.0  1991-2012 
+Max Verstappen      Dutch          209       63        112     2912.5  2015-2024 
+Sebastian Vettel    German         300       53        122     3098.0  2007-2022 
+Alain Prost         French         202       51        106     798.5   1980-1993 
+Ayrton Senna        Brazilian      162       41        80      614.0   1984-1994 
+Fernando Alonso     Spanish        404       32        106     2329.0  2001-2024 
+Nigel Mansell       British        192       31        59      482.0   1980-1995 
+Jackie Stewart      British        100       27        43      360.0   1965-1973 
+Jim Clark           British        72        25        32      274.0   1960-1968 
+
+=== 4. Equipes com mais pontos na história (top 5) ===
+equipe    nacionalidade  corridas  vitórias  pontos  
+--------  -------------  --------  --------  --------
+Ferrari   Italian        1100      249       11091.27
+Mercedes  German         317       129       7730.64 
+Red Bull  Austrian       394       122       7673.0  
+McLaren   British        929       185       7022.5  
+Williams  British        843       114       3641.0  
+
+=== 5. Tempo médio de pit stop por equipe em 2023 (tempo total no pit lane) ===
+equipe          paradas  média (s)  melhor (s)
+--------------  -------  ---------  ----------
+Ferrari         69       23.663     16.380    
+Mercedes        80       23.882     16.415    
+Red Bull        88       23.928     16.369    
+Aston Martin    80       24.129     16.600    
+AlphaTauri      83       24.539     16.246    
+Alpine F1 Team  75       24.895     16.380    
+McLaren         82       25.174     17.324    
+Alfa Romeo      89       25.467     17.130    
+Haas F1 Team    86       25.823     16.778    
+Williams        76       25.847     16.737    
+
+=== 6. Ritmo de Felipe Massa — Brazilian Grand Prix 2008 (1 documento) ===
+voltas  melhor volta  na volta  média     volta mais lenta
+------  ------------  --------  --------  ----------------
+71      1:13.736      36        1:19.598  2:12.091        
+
+===    primeiras 5 voltas ===
+volta  posição  tempo   
+-----  -------  --------
+1      1        1:40.707
+2      1        2:12.091
+3      1        2:01.700
+4      1        2:00.652
+5      1        1:19.958
+
+=== 7. Principais causas de abandono em 2023 ===
+status            ocorrências
+----------------  -----------
+Collision damage  11         
+Engine            9          
+Accident          7          
+Collision         5          
+Brakes            2          
+Disqualified      2          
+Overheating       2          
+Undertray         2          
+
+Concluído em 22.4 s.
+
+########## 5. Testes automatizados ##########
+.........                                                                [100%]
+9 passed in 13.23s
+
+########## RESULTADO ##########
+mongodb:  real
+pipeline: OK
+testes:   OK
+log salvo em: /Users/pedrocardoso/Developer/f1-bigdata-pipeline/teste_log.txt

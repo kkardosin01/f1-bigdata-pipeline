@@ -1,0 +1,38 @@
+# MongoDB + interface web (mongo-express) para a demonstração.
+#   docker compose up -d                       -> sobe MongoDB (27017) e mongo-express (8081)
+#   docker compose --profile pipeline run --rm pipeline   -> roda o pipeline dentro de um contêiner
+services:
+  mongo:
+    image: mongo:7
+    container_name: f1-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  mongo-express:
+    image: mongo-express:1
+    container_name: f1-mongo-express
+    depends_on:
+      - mongo
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017
+      ME_CONFIG_BASICAUTH: "false"
+
+  pipeline:
+    profiles: ["pipeline"]
+    build: .
+    depends_on:
+      - mongo
+    environment:
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DB: f1
+      KAGGLE_USERNAME: ${KAGGLE_USERNAME:-}
+      KAGGLE_KEY: ${KAGGLE_KEY:-}
+    volumes:
+      - ./data:/app/data
+
+volumes:
+  mongo_data:

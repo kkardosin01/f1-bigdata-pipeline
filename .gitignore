@@ -1,0 +1,14 @@
+# dados (zonas bruta, confiável, quarentena, agregados) não vão para o repositório
+data/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.pytest_cache/
+spark-warehouse/
+metastore_db/
+derby.log
+.DS_Store
+
+teste_log.txt
