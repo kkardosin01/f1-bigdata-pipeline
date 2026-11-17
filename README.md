@@ -188,6 +188,10 @@ e corridas sem registro de pit stop ficam com `pitStops` vazio.
 
 As linhas rejeitadas não são apagadas: vão para a quarentena com o motivo.
 
+Para ver a quarentena funcionando com o dataset real (que chega limpo), rode `bash demo_quarentena.sh`:
+ele copia a última carga, planta quatro erros (data inválida, chave órfã, campo obrigatório nulo e
+volta duplicada) e roda a limpeza, mostrando cada linha rejeitada com o motivo.
+
 ## Estrutura do projeto
 
 ```
