@@ -46,7 +46,8 @@ def main(argv=None) -> int:
     if "captura" in etapas:
         from .captura import capturar
         print("\n>>> Etapas 1-2: captura e zona bruta")
-        capturar(cfg, args.data_carga or date.today().isoformat(), args.csv_dir)
+        args.data_carga = args.data_carga or date.today().isoformat()
+        capturar(cfg, args.data_carga, args.csv_dir)  # a limpeza usa esta mesma carga
 
     spark = None
     if {"limpeza", "agregados", "carga"} & set(etapas):

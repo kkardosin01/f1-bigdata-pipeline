@@ -49,7 +49,8 @@ class Config:
         if not self.raw.exists():
             raise FileNotFoundError(
                 f"Zona bruta vazia ({self.raw}). Rode a etapa de captura primeiro.")
-        cargas = sorted(p.name for p in self.raw.iterdir() if p.is_dir())
+        # Cargas de demonstração (demo_quarentena.sh) não contam como a última carga.
+        cargas = sorted(p.name for p in self.raw.iterdir() if p.is_dir() and "demo" not in p.name)
         if not cargas:
             raise FileNotFoundError(
                 f"Nenhuma carga em {self.raw}. Rode a etapa de captura primeiro.")
